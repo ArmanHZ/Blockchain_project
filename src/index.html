@@ -23,19 +23,17 @@
     <h1></h1>
     <div class="orderArea">
       <form>
-        <label>Order:</label> <input type="text" name="order"><br>
-        <label>Quantity:</label> <input type="text" name="quantity"><br>
-        <label>Delivery Address:</label> <input type="text" name="deliveryAddress"><br>
+        <label>Order:</label> <input id="orderField" type="text" name="order"><br>
+        <label>Quantity:</label> <input id="quantityField" type="text" name="quantity"><br>
+        <label>Delivery Address:</label> <input id="addressField" type="text" name="deliveryAddress"><br>
         <input type="submit" value="Submit" onclick="App.addOrder()">
       </form>
     </div>
 
-    <div class="activeOrders">
+    <div id="activeOrders" class="activeOrders">
       <p>Active orders list</p>
+      <ul id="ordersList"></ul>
     </div>
-
-
-    <ul id="ordersList"></ul>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

@@ -83,26 +83,57 @@ App = {
         var smartBakkalInstance;
         App.contracts.SmartBakkal.deployed().then(function (instance) {
             smartBakkalInstance = instance;
-            return smartBakkalInstance.createOrder("test").call();
+            var order = document.getElementById("orderField").value;
+            var quantity = document.getElementById("quantityField").value;
+            var address = document.getElementById("addressField").value;
+            var compleOrder = quantity + " " + order + " to " + address;
+            return smartBakkalInstance.createOrder(compleOrder).call();
         }).catch(function (err) {
             console.log(err);
         });
     },
 
     listOrders: async function () {
-        const order = await App.smartBakkal.orders(2);
-        const account = order[0];
-        const id = order[1];
-        const content = order[2];
-        const completed = order[3];
-        console.log(account);
-        console.log(id);
-        console.log(content);
-        console.log(completed);
+        var smartBakkalInstance;
+        App.contracts.SmartBakkal.deployed().then(function (instance) {
+            smartBakkalInstance = instance;
+            return smartBakkalInstance.getOrderCount.call();
+        }).then(async function (orderCount) {
+            console.log("Order count: " + orderCount);
+            for (let i = 0; i < orderCount; i++) {
+                const order = await App.smartBakkal.orders(i);
+                var orderAsString = App.getOrderAsOneString(order);
+                var node = document.createElement("LI");
+                var textnode = document.createTextNode(orderAsString);
+                node.appendChild(textnode);
+                document.getElementById("ordersList").appendChild(node);
+            }
+        }).catch(function (err) {
+            console.log(err);
+        });
+    },
+
+    getOrderAsOneString: function (orderAsArray) {
+        const account = orderAsArray[0];
+        const id = orderAsArray[1];
+        const content = orderAsArray[2];
+        const completed = orderAsArray[3];
+        var finalString = "Account id: " + account + "\nOrder no: " + (id + 1) + "\nOder description: " + content
+            + "\nIs completed: " + completed;
+        return finalString;
     }
 
 };
 
+// For test purposes
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds) {
+            break;
+        }
+    }
+}
 
 $(function () {
     $(window).load(function () {

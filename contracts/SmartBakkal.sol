@@ -14,8 +14,8 @@ contract SmartBakkal {
     mapping(uint => Order) public orders;
 
     function createOrder(string memory _content) public {
-        orderCount++;
         orders[orderCount] = Order(msg.sender, orderCount, _content, false);
+        orderCount++;
     }
 
     function getOrder(uint id) public view returns (uint, string memory, bool) {
