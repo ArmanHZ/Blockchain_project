@@ -1,0 +1,39 @@
+.orderArea {
+    padding: 25px;
+    margin-top: 50px;
+    margin-left: 12%;
+    width: 32%;
+    border-style: solid;
+    border-color: black;
+    float: left;
+}
+
+.orderArea > form > label {
+    width: 200px;
+    font-size: 18px;
+    display: inline-block;
+}
+
+.orderArea > form > input {
+    width: 200px;
+    font-size: 18px;
+    display: inline-block;
+}
+
+.activeOrders {
+    overflow-y: scroll;
+    max-height: 500px;
+    height: 500px;
+    padding: 25px;
+    margin-top: 50px;
+    margin-right: 15%;
+    width: 32%;
+    border-style: solid;
+    border-color: black;
+    float: right;
+}
+
+.activeOrders > p {
+    text-align: center;
+    font-size: 22px;
+}
