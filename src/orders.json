@@ -1,17 +1,14 @@
 [
   {
-    "id": 0,
     "name": "Bread",
-    "quantitiy": 2
+    "price": 2
   },
   {
-    "id": 1,
     "name": "Milk",
-    "quantitiy": 5
+    "price": 5
   },
   {
-    "id": 2,
     "name": "Egg",
-    "quantitiy": 5
+    "price": 3
   }
 ]

@@ -4,14 +4,17 @@ App = {
 
     init: async function () {
         $.getJSON('../orders.json', function (data) {
-
-            // for (i = 0; i < data.length; i++) {
-            //     var orderAsString = "Order no: " + data[i].id + " Item: " + data[i].name + " Quantity: " + data[i].quantitiy;
-            //     var node = document.createElement("LI");
-            //     var textnode = document.createTextNode(orderAsString);
-            //     node.appendChild(textnode);
-            //     document.getElementById("ordersList").appendChild(node);
-            // }
+            const orderField = document.getElementById("orderField");
+            const option = document.createElement("option");
+            option.text = "";
+            orderField.add(option);
+            for (i = 0; i < data.length; i++) {
+                const option = document.createElement("option");
+                option.text = data[i].name;
+                orderField.add(option);
+            }
+            console.log("Starting...");
+            App.admin = "0x5b99A9C66EAd2F0ae898c3c156Eed695b57aFB55".toLowerCase();
         });
         return await App.initWeb3();
     },
@@ -25,7 +28,7 @@ App = {
                 await window.ethereum.enable();
             } catch (error) {
                 // User denied account access...
-                console.error("User denied account access")
+                console.error("User denied account access");
             }
         }
         // Legacy dapp browsers...
@@ -55,15 +58,14 @@ App = {
     },
 
     loadAccount: async function () {
-        // Set the current blockchain account
-        App.admin = web3.eth.accounts[0];
         var smartBakkalInstance;
         App.contracts.SmartBakkal.deployed().then(function (instance) {
             smartBakkalInstance = instance;
             return smartBakkalInstance.getSender.call();
         }).then(function (account) {
             App.account = account;
-            console.log("Load account: " + App.account);
+            console.log("Loaded account: " + App.account);
+            console.log("Admin account: " + App.admin);
             return App.setTitle();
         }).catch(function (err) {
             console.log(err.message);
@@ -80,19 +82,46 @@ App = {
     },
 
     addOrder: async function () {
-        var smartBakkalInstance;
-        App.contracts.SmartBakkal.deployed().then(function (instance) {
-            smartBakkalInstance = instance;
-            var order = document.getElementById("orderField").value;
-            var quantity = document.getElementById("quantityField").value;
-            var address = document.getElementById("addressField").value;
-            var compleOrder = quantity + " " + order + " to " + address;
-            return smartBakkalInstance.createOrder(compleOrder).call();
-        }).catch(function (err) {
-            console.log(err);
-        });
+        if (App.account != App.admin) {
+            var smartBakkalInstance;
+            App.contracts.SmartBakkal.deployed().then(function (instance) {
+                smartBakkalInstance = instance;
+                var order = document.getElementById("orderField").value;
+                var quantity = document.getElementById("quantityField").value;
+                var address = document.getElementById("addressField").value;
+                var compleOrder = quantity + " " + order + "(s) to " + address;
+
+                const price = App.getProductPrice(order) * quantity;
+                // TODO check for balance
+                web3.eth.sendTransaction({
+                    to: App.admin,
+                    from: App.account,
+                    value: web3.toWei(price, "ether")
+                }, console.log);
+
+                return smartBakkalInstance.createOrder(compleOrder).call();
+            }).catch(function (err) {
+                console.log(err);
+            });
+        } else {
+            window.alert("Admin cannot place an order!");
+        }
     },
 
+    getProductPrice: function (productName) {
+        let price;
+        $.getJSON('../orders.json', function (data) {
+            for (i = 0; i < data.length; i++) {
+                if (data[i].name == productName) {
+                    price = data[i].price;
+                    break;
+                }
+            }
+        });
+        return price;
+    },
+
+    // TODO Clean/Refactor this function a bit.
     listOrders: async function () {
         var smartBakkalInstance;
         App.contracts.SmartBakkal.deployed().then(function (instance) {
@@ -102,11 +131,27 @@ App = {
             console.log("Order count: " + orderCount);
             for (let i = 0; i < orderCount; i++) {
                 const order = await App.smartBakkal.orders(i);
+                if (order[3]) continue; // Don't show in the active orders list if the order is completed.
                 var orderAsString = App.getOrderAsOneString(order);
-                var node = document.createElement("LI");
+                var node = document.createElement("p");
                 var textnode = document.createTextNode(orderAsString);
                 node.appendChild(textnode);
-                document.getElementById("ordersList").appendChild(node);
+                document.getElementById("activeOrders").appendChild(node);
+                var btn = document.createElement("button");
+                btn.addEventListener('click', function () {
+                    if (App.account == App.admin) {
+                        console.log("Order no: " + (parseInt(order[1]) + 1));
+                        smartBakkalInstance.setAsComplete(parseInt(order[1]) + 1);
+                    }
+                    else
+                        window.alert("You don't have the permission to perform the action!");
+                }, false);
+                btn.innerHTML = "Complete order " + (parseInt(order[1]) + 1);
+                document.getElementById("activeOrders").appendChild(btn);
+                var node = document.createElement("p");
+                var textnode = document.createTextNode("##############################\n");
+                node.appendChild(textnode);
+                document.getElementById("activeOrders").appendChild(node);
             }
         }).catch(function (err) {
             console.log(err);
@@ -118,7 +163,7 @@ App = {
         const id = orderAsArray[1];
         const content = orderAsArray[2];
         const completed = orderAsArray[3];
-        var finalString = "Account id: " + account + "\nOrder no: " + (id + 1) + "\nOder description: " + content
+        var finalString = "Account id: " + account + "\nOrder no: " + (parseInt(id) + 1) + "\nOder description: " + content
             + "\nIs completed: " + completed;
         return finalString;
     }
@@ -134,6 +179,10 @@ function sleep(milliseconds) {
         }
     }
 }
+
+$.ajaxSetup({
+    async: false
+});
 
 $(function () {
     $(window).load(function () {

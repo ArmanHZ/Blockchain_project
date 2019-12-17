@@ -19,18 +19,18 @@
     <link type="text/css" rel="stylesheet" href="stylesheet.css">
   </head>
   <body>
-    <h1 align="center" id="topHeader">Test</h1>
+    <h1 align="center" id="topHeader">Not logged in!</h1>
     <h1></h1>
     <div class="orderArea">
       <form>
-        <label>Order:</label> <input id="orderField" type="text" name="order"><br>
-        <label>Quantity:</label> <input id="quantityField" type="text" name="quantity"><br>
+        <label>Order:</label> <select id="orderField"></select><br>
+        <label>Quantity:</label> <input id="quantityField" type="number" min="1" max="20" name="quantity"><br>
         <label>Delivery Address:</label> <input id="addressField" type="text" name="deliveryAddress"><br>
         <input type="submit" value="Submit" onclick="App.addOrder()">
       </form>
     </div>
 
-    <div id="activeOrders" class="activeOrders">
+    <div id="activeOrders" style="white-space: pre-line" class="activeOrders">
       <p>Active orders list</p>
       <ul id="ordersList"></ul>
     </div>

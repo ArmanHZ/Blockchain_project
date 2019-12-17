@@ -20,14 +20,20 @@
     display: inline-block;
 }
 
+.orderArea > form > select {
+    width: 200px;
+    font-size: 18px;
+    display: inline-block;
+}
+
 .activeOrders {
     overflow-y: scroll;
     max-height: 500px;
     height: 500px;
     padding: 25px;
     margin-top: 50px;
-    margin-right: 15%;
-    width: 32%;
+    margin-right: 8%;
+    width: 45%;
     border-style: solid;
     border-color: black;
     float: right;
@@ -36,6 +42,12 @@
 .activeOrders > p {
     text-align: center;
     font-size: 22px;
+}
+
+.activeOrders > button {
+    display: block;
+    margin: 0 auto;
+    font-size: 15px;
 }
 
 /* .activeOrders > ul {

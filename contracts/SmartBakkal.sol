@@ -31,4 +31,9 @@ contract SmartBakkal {
         return msg.sender;
     }
 
+    function setAsComplete(uint no) public {
+        uint orderNo = no - 1;
+        orders[orderNo].completed = true;
+    }
+
 }
