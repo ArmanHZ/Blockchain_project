@@ -2,19 +2,26 @@ pragma solidity ^0.5.0;
 
 contract SmartBakkal {
 
+    address private contractOwner;
+
     uint private orderCount = 0;
+
+    constructor() public {
+        contractOwner = msg.sender;
+    }
 
     struct Order {
         address account;
         uint id;
         string content;
         bool completed;
+        uint248 paidAmount;
     }
 
     mapping(uint => Order) public orders;
 
-    function createOrder(string memory _content) public {
-        orders[orderCount] = Order(msg.sender, orderCount, _content, false);
+    function createOrder(string memory _content, uint248 paidAmount) public payable {
+        orders[orderCount] = Order(msg.sender, orderCount, _content, false, paidAmount);
         orderCount++;
     }
 
@@ -31,9 +38,11 @@ contract SmartBakkal {
         return msg.sender;
     }
 
-    function setAsComplete(uint no) public {
+    function setAsComplete(uint no) public payable {
+        require(msg.sender == contractOwner, "Only the contract owner is allowed to perform this action.");
         uint orderNo = no - 1;
         orders[orderNo].completed = true;
+        msg.sender.transfer(address(this).balance - orders[orderNo].paidAmount);
     }
 
 }

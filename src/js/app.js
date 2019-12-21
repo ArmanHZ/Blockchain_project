@@ -89,19 +89,10 @@ App = {
                 var order = document.getElementById("orderField").value;
                 var quantity = document.getElementById("quantityField").value;
                 var address = document.getElementById("addressField").value;
-                var compleOrder = quantity + " " + order + "(s) to " + address;
-
+                var completeOrder = quantity + " " + order + "(s) to " + address;
                 const price = App.getProductPrice(order) * quantity;
-                // TODO check for balance
-                web3.eth.sendTransaction({
-                    to: App.admin,
-                    from: App.account,
-                    value: web3.toWei(price, "ether")
-                }, console.log);
 
-                return smartBakkalInstance.createOrder(compleOrder).call();
-            }).catch(function (err) {
-                console.log(err);
+                smartBakkalInstance.createOrder(completeOrder, price, { from: App.account, value: web3.toWei(price, "ether") })
             });
         } else {
             window.alert("Admin cannot place an order!");
